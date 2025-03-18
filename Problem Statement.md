@@ -1,7 +1,7 @@
 ### Objective: Deploy a Web Application Using Docker and Kubernetes
 
 1. **Clone the GitHub Repository**:
-    - Retrieve the repository from the following URL: https://github.com/comal21/Dell-Capstone.git.
+    - Retrieve the repository from the following URL: https://github.com/comal21/Dell-Capstone.git
 
 2. **Modify Application Content**:
     - Navigate to the `/Dell-Capstone/www` directory.
