@@ -1,4 +1,4 @@
-**Objective: Deploy a web application using Docker and Kubernetes**
+*Objective: Deploy a web application using Docker and Kubernetes*
 
 ** Clone the GitHub Repository using the following URL: https://github.com/comal21/Dell-Capstone.git
 
