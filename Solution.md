@@ -30,6 +30,7 @@
     kind: Deployment
     metadata:
       name: mywebapp
+      namespace: capstone
     spec:
       replicas: 3
       selector:
@@ -62,6 +63,7 @@
     kind: Service
     metadata:
       name: mywebapp-service
+      namespace: capstone
     spec:
       selector:
         app: mywebapp
