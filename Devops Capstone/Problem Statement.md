@@ -1,9 +1,9 @@
 ## **Automated CI/CD Pipeline for a Containerized Web Application on AWS**  
 
 ### This project aims to set up an automated **CI/CD pipeline** using:  
-### ✅ **Terraform** for infrastructure provisioning  
-### ✅ **Ansible** for configuration management  
-### ✅ **Jenkins with Maven** for continuous integration and deployment  
+* **Terraform** for infrastructure provisioning  
+* **Ansible** for configuration management  
+* **Jenkins with Maven** for continuous integration and deployment  
 ---
 
 ## **Task 1: Infrastructure Setup with Terraform**  
@@ -28,7 +28,7 @@
 ## **Task 2: Configuration with Ansible**  
 
 ### **1. Use the Following Ansible Playbook to Setup Jenkins & Docker on the Managed Node**  
-- Run the **Ansible Playbook** from the **CI/CD machine** to:  
+- Run the **Ansible Playbook** from the **CI/CD machine** which will:  
   ✅ Install **Jenkins**  
   ✅ Install **Docker**  
   ✅ Configure **Jenkins** to start automatically  
