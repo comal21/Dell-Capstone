@@ -4,7 +4,9 @@
 * **Terraform** for infrastructure provisioning  
 * **Ansible** for configuration management  
 * **Jenkins with Maven** for continuous integration
-* **Docker Containers** for continous deployment  
+* **Docker Containers** for continous deployment
+![image](https://github.com/user-attachments/assets/e4450813-183f-4236-8ff9-96d144af7eac)
+
 ---
 
 ## **Task 1: Infrastructure Setup with Terraform**  
