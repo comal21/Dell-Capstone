@@ -3,25 +3,25 @@
 ### This project aims to set up an automated **CI/CD pipeline** using:  
 * **Terraform** for infrastructure provisioning  
 * **Ansible** for configuration management  
-* **Jenkins with Maven** for continuous integration and deployment  
+* **Jenkins with Maven** for continuous integration
+* **Docker Containers** for continous deployment  
 ---
 
 ## **Task 1: Infrastructure Setup with Terraform**  
 
 ### **1. Provision an Ansible Managed Node**  
-- Launch an **Ubuntu EC2 instance (t3.medium)** from the existing **CI/CD EC2 instance** using Terraform.  
-- This instance will serve as the **Ansible Managed Node** for configuration and deployment.  
-
-### **2. Terraform Configuration**  
+- Connect to the exisiting CI/CD Machine
 - Create a **single Terraform file** or separate files for:  
   - **AWS provider**  
   - **Key Pair** (generated using `ssh-keygen -t rsa`)  
   - **Security Group** (reuse the security group ID of the existing CI/CD machine)  
   - **EC2 instance configuration** using the generated key pair  
-  - **Ubuntu AMI-ID** (based on the AWS region)  
+  - **Ubuntu AMI-ID** (based on the AWS region)
+- The terraform script is expected to create a new instance that will serve as the **Ansible Managed Node**.
 
-### **3. Apply Terraform Code**  
-- Execute Terraform commands to **provision** the infrastructure and **enable SSH access** from the CI/CD machine to the **Ansible Managed Node**.  
+### **2. Apply Terraform Code**  
+- Execute Terraform commands to **provision** the managed node
+- Verify the **SSH access** from the CI/CD machine to the **Ansible Managed Node**.  
 ---
 ![1](https://github.com/user-attachments/assets/b2cdc105-2ead-44b6-b48f-7bd5c701382e)
 
@@ -182,11 +182,13 @@ MAINTAINER "CloudThat"
 ADD hello-world-war-1.0.0.war /usr/local/tomcat/webapps/
 ```
 - Configure Jenkins to:  
-  ✅ **Pull the latest code** from GitHub  
-  ✅ **Use Maven** to build the application 
-  ✅ **Deploy the application using Docker**  
-  ✅ **Trigger builds manually** (`Build Now` button)  
+  ✅ **Source Code Management** to use Git 
+  ✅ **Add the Goals&Options** in Build to have a clean deployment
+  ✅ **Configure the Post Build Steps using execute shell** - Navigate to Jenkins workspace -> Copy the WAR file -> top and Remove Existing Container (if running) -> Build a New Docker Image -> Run the Docker Container 
+  ✅ **Trigger build manually** (`Build Now` button)  
 ---
+Once the build is successful, access the container,
+To access the Page In Browser Type "http:// < Your Managed node Public IP >:9999/hello-world-war-1.0.0/" to see the website.
 
 ### **Final Outcome**  
 <img width="391" alt="image" src="https://github.com/user-attachments/assets/cff932ce-c2fc-4819-bbca-d27965de33cf" />
