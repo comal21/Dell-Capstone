@@ -29,7 +29,7 @@
    - Install and set up:  
      - **Ansible**  
      - **AWS CLI**  
-     - **Python**  
+     - **Python3**  
      - **AWS Configure** (for AWS authentication)  
 
 2. **Setup Jenkins & Docker**  
