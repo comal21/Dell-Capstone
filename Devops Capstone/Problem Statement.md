@@ -182,10 +182,10 @@ MAINTAINER "CloudThat"
 ADD hello-world-war-1.0.0.war /usr/local/tomcat/webapps/
 ```
 - Configure Jenkins to:  
-  ✅ **Source Code Management** to use Git 
-  ✅ **Add the Goals&Options** in Build to have a clean deployment
-  ✅ **Configure the Post Build Steps using execute shell** - Navigate to Jenkins workspace -> Copy the WAR file -> top and Remove Existing Container (if running) -> Build a New Docker Image -> Run the Docker Container 
-  ✅ **Trigger build manually** (`Build Now` button)  
+  * **Source Code Management** to use Git 
+  * **Add the Goals&Options** in Build to have a clean deployment
+  * **Configure the Post Build Steps using execute shell** - Navigate to Jenkins workspace -> Copy the WAR file -> top and Remove Existing Container (if running) -> Build a New Docker Image -> Run the Docker Container 
+  * **Trigger build manually** (`Build Now` button)  
 ---
 Once the build is successful, access the container,
 To access the Page In Browser Type "http:// < Your Managed node Public IP >:9999/hello-world-war-1.0.0/" to see the website.
