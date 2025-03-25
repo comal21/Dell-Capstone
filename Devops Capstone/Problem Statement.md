@@ -1,6 +1,6 @@
 ### **Automated CI/CD Pipeline for a Containerized Web Application on AWS**  
 
-This project aims to set up an automated CI/CD pipeline using **Terraform** for infrastructure provisioning, **Ansible** for configuration management, and **Jenkins with Maven** for continuous integration and deployment.  
+#### This project aims to set up an automated CI/CD pipeline using **Terraform** for infrastructure provisioning, **Ansible** for configuration management, and **Jenkins with Maven** for continuous integration and deployment.  
 ---
 
 ## **Task 1: Infrastructure Setup with Terraform**  
