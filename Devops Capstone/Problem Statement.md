@@ -137,35 +137,56 @@
 
 ## **Task 3: Setup Jenkins and Docker**  
 
-### **1. Access Jenkins**  
+### **1. Configure Docker Permissions for Jenkins**  
+- **SSH into the Managed Node**  
+- Switch to the **root user**:  
+  ```
+  sudo su
+  ```
+- Open the sudoers file:  
+  ```
+  visudo
+  ```
+- Add the following line at the end:  
+  ```
+  jenkins ALL=(ALL) NOPASSWD: /usr/bin/docker
+  ```
+- Save and exit.
+
+### **2. Access Jenkins**  
 - Open Jenkins in a web browser using the **public IP** of the managed node.  
 - Retrieve the **Jenkins admin password** from:  
   ```
-  /var/lib/jenkins/secrets/initialAdminPassword
+  cat /var/lib/jenkins/secrets/initialAdminPassword
   ```
 
-### **2. Configure Maven in Jenkins**  
+### **3. Configure Maven in Jenkins**  
 - Install **Maven Plugins** in Jenkins.  
 - Add **Maven Tool** in Jenkins configuration settings.  
 
-### **3. Set Up a Maven Project in Jenkins**  
+### **4. Set Up a Maven Project in Jenkins**  
 - Create a **New Maven Project** in Jenkins.  
 - Use the following GitHub repository as the source code:  
   ```
   https://github.com/comal21/my-app
-  ```  
+  ```
+### **5. Use the Following Dockerfile for Deployment**  
+```dockerfile
+# Pull Base Image
+FROM tomcat:8-jre8
+
+# Maintainer
+MAINTAINER "CloudThat"
+
+# Copy the war file to the image's Tomcat path
+ADD hello-world-war-1.0.0.war /usr/local/tomcat/webapps/
+```
 - Configure Jenkins to:  
   ✅ **Pull the latest code** from GitHub  
-  ✅ **Use Maven** to build the application  
+  ✅ **Use Maven** to build the application 
   ✅ **Deploy the application using Docker**  
   ✅ **Trigger builds manually** (`Build Now` button)  
-
 ---
 
 ### **Final Outcome**  
-Once the setup is complete, you will have a **manual CI/CD pipeline** where Jenkins:  
-- Fetches the latest code from GitHub  
-- Uses Maven to build the application  
-- Deploys the application in a Docker container  
-
-This pipeline lays the foundation for a fully automated CI/CD workflow! 🚀
+<img width="391" alt="image" src="https://github.com/user-attachments/assets/cff932ce-c2fc-4819-bbca-d27965de33cf" />
