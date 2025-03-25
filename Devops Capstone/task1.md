@@ -1,21 +1,35 @@
-Step 1: Infrastructure Setup with Terraform
-1.1 Create a Key Pair
-Generate a key pair using ssh-keygen:
 
+
+## **Step 1: Infrastructure Setup with Terraform**  
+
+### **1.1 Create a Key Pair**  
+Generate a key pair using `ssh-keygen`:  
+```bash
 ssh-keygen -t rsa 
-1.2 Create Terraform Files
-Create the following Terraform files:
+```
 
-Provider Configuration (provider.tf)
+---
+
+### **1.2 Create Terraform Files**  
+Create the following Terraform files:  
+
+1. **Provider Configuration** (`provider.tf`)  
+```hcl
 provider "aws" {
   region = "us-east-1"
 }
-Key Pair (key_pair.tf)
+```
+
+2. **Key Pair** (`key_pair.tf`)  
+```hcl
 resource "aws_key_pair" "mykeypair" {
   key_name   = var.key_name
   public_key = file(var.public_key)
 }
-EC2 Instance (instance.tf)
+```
+
+3. **EC2 Instance** (`instance.tf`)  
+```hcl
 resource "aws_instance" "my-machine" {
   ami                    = var.ami_id
   key_name               = var.key_name
@@ -26,7 +40,10 @@ resource "aws_instance" "my-machine" {
     Name = "my-instance"
   }
 }
-Variables (vars.tf)
+```
+
+4. **Variables** (`vars.tf`)  
+```hcl
 # Change the SG ID. You can use the same SG ID used for your CICD anchor server
 # Basically the SG should open ports 22, 80, 8080, 9999, and 4243
 variable "sg_id" {
@@ -51,20 +68,41 @@ variable "key_name" {
 variable "public_key" {
     default = "/home/ubuntu/.ssh/id_rsa.pub"   #Ubuntu OS
 }
-1.3 Apply Terraform Code
-Initialize Terraform:
+```
+
+---
+
+### **1.3 Apply Terraform Code**  
+1. Initialize Terraform:  
+```bash
 terraform init
-Plan the deployment:
+```
+2. Plan the deployment:  
+```bash
 terraform plan
-Apply the configuration:
+```
+3. Apply the configuration:  
+```bash
 terraform apply -auto-approve
-Step 2: Configuration with Ansible
-Update the host-file with the EC2 instance IP address
+```
+
+---
+
+## **Step 2: Configuration with Ansible**  
+
+1. **Update the host-file with the EC2 instance IP address**  
+```bash
 sudo vi /etc/ansible/hosts
-Paste the Public IP of the EC2 instance and save the file.
+```
+2. Paste the Public IP of the EC2 instance and save the file.  
 
-SSH into the Instance
-
+3. **SSH into the Instance**  
+```bash
 ssh ubuntu@<IP-address>
-Create an Ansible playbook
+```
+
+4. **Create an Ansible playbook**  
+```bash
 vi ansible-script.yaml
+```
+
