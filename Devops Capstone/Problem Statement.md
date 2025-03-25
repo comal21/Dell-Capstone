@@ -1,151 +1,171 @@
-### **Automated CI/CD Pipeline for a Containerized Web Application on AWS**  
+# **Automated CI/CD Pipeline for a Containerized Web Application on AWS**  
 
-#### This project aims to set up an automated CI/CD pipeline using **Terraform** for infrastructure provisioning, **Ansible** for configuration management, and **Jenkins with Maven** for continuous integration and deployment.  
+This project aims to set up an automated **CI/CD pipeline** using:  
+✅ **Terraform** for infrastructure provisioning  
+✅ **Ansible** for configuration management  
+✅ **Jenkins with Maven** for continuous integration and deployment  
 ---
 
 ## **Task 1: Infrastructure Setup with Terraform**  
 
-1. **Provision an Ansible Managed Node**  
-   - Launch an **Ubuntu EC2 instance (t3.medium)** from the existing CI/CD EC2 instance using Terraform.  
-   - This instance will act as the **Ansible Managed Node**.  
+### **1. Provision an Ansible Managed Node**  
+- Launch an **Ubuntu EC2 instance (t3.medium)** from the existing **CI/CD EC2 instance** using Terraform.  
+- This instance will serve as the **Ansible Managed Node** for configuration and deployment.  
 
-2. **Terraform Configuration**  
-   - Create either a **single Terraform file** or **separate files** for:  
-     - AWS **provider**  
-     - **Key Pair** (generated using `ssh-keygen -t rsa`)  
-     - **Security Group**: use the security group Id of the CICD machine. 
-     - **EC2 Instance** configuration using the generated key pair.
-     - Use the Ubuntu AMI-ID based on your region.
+### **2. Terraform Configuration**  
+- Create a **single Terraform file** or separate files for:  
+  - **AWS provider**  
+  - **Key Pair** (generated using `ssh-keygen -t rsa`)  
+  - **Security Group** (reuse the security group ID of the existing CI/CD machine)  
+  - **EC2 instance configuration** using the generated key pair  
+  - **Ubuntu AMI-ID** (based on the AWS region)  
 
-3. **Apply Terraform Code**  
-   - Run Terraform commands to create the infrastructure and ensure SSH access from the CI/CD machine to the Ansible Managed Node.  
-
+### **3. Apply Terraform Code**  
+- Execute Terraform commands to **provision** the infrastructure and **enable SSH access** from the CI/CD machine to the **Ansible Managed Node**.  
 ---
-![image](https://github.com/user-attachments/assets/d788c659-5f4d-4573-929e-23c1f637a0cf)
+![1](https://github.com/user-attachments/assets/b2cdc105-2ead-44b6-b48f-7bd5c701382e)
 
 ## **Task 2: Configuration with Ansible**  
 
-1. **Use the below Ansible Playbook to setup Jenkins & Docker on the managed node**  
-   - Run the Playbook from the CI/CD machine.
-```
+### **1. Use the Following Ansible Playbook to Setup Jenkins & Docker on the Managed Node**  
+- Run the **Ansible Playbook** from the **CI/CD machine** to:  
+  ✅ Install **Jenkins**  
+  ✅ Install **Docker**  
+  ✅ Configure **Jenkins** to start automatically  
+  ✅ Retrieve the **Jenkins admin password**  
+  ✅ Start and configure **Docker**  
+
+#### **Ansible Playbook**:
+```yaml
 ---
-- name: Start installing Jenkins pre-requisites before installing Jenkins
+- name: Install and Configure Jenkins & Docker
   hosts: all
   become: yes
   become_method: sudo
   gather_facts: no
   tasks:
-  - name: Update apt repository with latest packages
+  
+  - name: Update and upgrade the apt repository
     apt:
       update_cache: yes
       upgrade: yes
- 
-  - name: Installing jdk17 in Jenkins server
+  
+  - name: Install OpenJDK 17 (Required for Jenkins)
     apt:
       name: openjdk-17-jdk
       update_cache: yes
-    become: yes
- 
-  - name: Installing jenkins apt repository key
+  
+  - name: Add Jenkins repository key
     apt_key:
       url: https://pkg.jenkins.io/debian/jenkins.io-2023.key
       state: present
-    become: yes
- 
-  - name: Configuring the apt repository
+  
+  - name: Add Jenkins repository
     apt_repository:
       repo: deb https://pkg.jenkins.io/debian binary/
       filename: /etc/apt/sources.list.d/jenkins.list
       state: present
-    become: yes
- 
-  - name: Update apt-get repository with "apt-get update"
+  
+  - name: Update apt repository after adding Jenkins repository
     apt:
       update_cache: yes
 
-  - name: Finally, its time to install Jenkins
-    apt: name=jenkins update_cache=yes
-    become: yes
- 
-  - name: Jenkins is installed. Lets start 'Jenkins' now!
-    service: name=jenkins state=started
- 
- 
-  - name: Wait until the file /var/lib/jenkins/secrets/initialAdminPassword is present before continuing
+  - name: Install Jenkins
+    apt:
+      name: jenkins
+      update_cache: yes
+  
+  - name: Start and enable Jenkins service
+    service:
+      name: jenkins
+      state: started
+      enabled: yes
+  
+  - name: Wait for Jenkins admin password file to be created
     wait_for:
       path: /var/lib/jenkins/secrets/initialAdminPassword
-
-  - name: You can find Jenkins admin password under 'debug'
+  
+  - name: Retrieve Jenkins initial admin password
     command: cat /var/lib/jenkins/secrets/initialAdminPassword
-    register: out
-  - debug: var=out.stdout_lines
+    register: jenkins_password
+  
+  - debug:
+      var: jenkins_password.stdout_lines
 
-  - name: install docker prerequisite packages
+  - name: Install Docker prerequisite packages
     apt:
       name: ['ca-certificates', 'curl', 'gnupg', 'lsb-release']
       update_cache: yes
       state: latest
 
-  - name: Install the docker apt repository key
-    apt_key: url=https://download.docker.com/linux/ubuntu/gpg state=present
-    become: yes
- 
-  - name: Configure the apt repository
+  - name: Add Docker repository key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+  
+  - name: Add Docker repository
     apt_repository:
       repo: deb https://download.docker.com/linux/ubuntu bionic stable
       state: present
-    become: yes
- 
-  - name: Install Docker packages
+  
+  - name: Install Docker
     apt:
       name: ['docker-ce', 'docker-ce-cli', 'containerd.io']
       update_cache: yes
-    become: yes
- 
-  - name: Start Docker service
+  
+  - name: Start and enable Docker service
     service:
       name: docker
       state: started
       enabled: yes
- 
-  - lineinfile:
-       dest: /lib/systemd/system/docker.service
-       regexp: '^ExecStart='
-       line: 'ExecStart=/usr/bin/dockerd -H tcp://0.0.0.0:4243 -H unix:///var/run/docker.sock'
- 
- 
-  - name: Reload systemd
+  
+  - name: Configure Docker to listen on TCP and Unix sockets
+    lineinfile:
+      path: /lib/systemd/system/docker.service
+      regexp: '^ExecStart='
+      line: 'ExecStart=/usr/bin/dockerd -H tcp://0.0.0.0:4243 -H unix:///var/run/docker.sock'
+  
+  - name: Reload systemd daemon
     command: systemctl daemon-reload
- 
-  - name: docker restart
+  
+  - name: Restart Docker service
     service:
       name: docker
       state: restarted
-...
- ```
+```
 ---
 
 ## **Task 3: Setup Jenkins and Docker**  
-1. Ensure Jenkins & Docker are installed on the Managed node.
-2. **Access Jenkins**  
-   - Open Jenkins in a browser using the public IP of the managed node.  
 
-3. **Configure Maven in Jenkins**  
-   - Install the **Maven plugins** in Jenkins.  
-   - Add **Maven tool** in Jenkins settings.  
+### **1. Access Jenkins**  
+- Open Jenkins in a web browser using the **public IP** of the managed node.  
+- Retrieve the **Jenkins admin password** from:  
+  ```
+  /var/lib/jenkins/secrets/initialAdminPassword
+  ```
 
-4. **Set Up a Maven Project in Jenkins**  
-   - Create a **new Maven project** in Jenkins.  
-   - Use the following GitHub repository:  
-     ```
-     https://github.com/comal21/my-app
-     ```  
-   - Configure Jenkins to:  
-     - **Manually trigger the build** (`Build Now` button).  
-     - **Pull the latest code** from GitHub.  
-     - **Use Maven** to build the application.  
-     - **Deploy the application using Docker**.  
+### **2. Configure Maven in Jenkins**  
+- Install **Maven Plugins** in Jenkins.  
+- Add **Maven Tool** in Jenkins configuration settings.  
+
+### **3. Set Up a Maven Project in Jenkins**  
+- Create a **New Maven Project** in Jenkins.  
+- Use the following GitHub repository as the source code:  
+  ```
+  https://github.com/comal21/my-app
+  ```  
+- Configure Jenkins to:  
+  ✅ **Pull the latest code** from GitHub  
+  ✅ **Use Maven** to build the application  
+  ✅ **Deploy the application using Docker**  
+  ✅ **Trigger builds manually** (`Build Now` button)  
+
 ---
 
-Once complete, the setup will allow you to manually trigger a CI/CD pipeline, where Jenkins will fetch the code from the configured Github Repo, Maven will build it, and Docker will deploy the application.
+### **Final Outcome**  
+Once the setup is complete, you will have a **manual CI/CD pipeline** where Jenkins:  
+- Fetches the latest code from GitHub  
+- Uses Maven to build the application  
+- Deploys the application in a Docker container  
 
+This pipeline lays the foundation for a fully automated CI/CD workflow! 🚀
